@@ -100,7 +100,7 @@ def prop_FC(csp, newVar=None):
     
     for c in constraints:
         if c.get_n_unasgn() == 1:
-            var = c.get_get_unasgn_vars()[0]
+            var = c.get_unasgn_vars()[0]
             
             for d in var.cur_domain():
                 if not c.has_support(var, d):
