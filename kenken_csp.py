@@ -71,6 +71,33 @@ def kenken_csp_model(kenken_grid):
                 cons.append(binary_not_equal(vars, i, j, k, 'row'))
                 cons.append(binary_not_equal(vars, i, j, k, 'column'))
     
+    # operation constraints for each cage
+    for cage in range(1, len(kenken_grid)):
+        operator = kenken_grid[cage][-1]  
+        target_num = kenken_grid[cage][-2]
+        cage_variables = []
+        cage_variables_domain = []
+        for cell in range(len(kenken_grid[cage]) - 2):
+            i = int(str(kenken_grid[cage][cell])[0]) - 1
+            j = int(str(kenken_grid[cage][cell])[1]) - 1
+            
+            cage_variables.append(vars[i][j])
+            cage_variables_domain.append(vars[i][j].domain())
+        
+        con = Constraint("C(Cage{})".format(cage), cage_variables)
+        
+        sat_tuples = []
+        
+        if(operator == 0):
+            for t in itertools.product(*cage_variables_domain):
+                total = 0
+                for num in t:
+                    total += num
+                if (total == target_num):
+                    sat_tuples.append(t)
+            con.add_satisfying_tuples(sat_tuples)
+            cons.append(con)
+    
     csp = CSP("Kenken")
     
     # adding variables to csp
@@ -100,4 +127,4 @@ def binary_not_equal(vars, i, j, k, constraint_type):
             sat_tuples.append(t)
     con.add_satisfying_tuples(sat_tuples)
     
-    return con   
+    return con
