@@ -127,9 +127,8 @@ def kenken_csp_model(kenken_grid):
     # row and column constraints
     for i in range(len(domain)):
         for j in range(len(domain)):
-            for k in range(len(domain)):
-                cons.append(binary_not_equal(vars, i, j, k, 'row'))
-                cons.append(binary_not_equal(vars, i, j, k, 'column'))    
+            cons.extend(binary_not_equal(vars, i, j, 'row'))
+            cons.extend(binary_not_equal(vars, i, j, 'column'))    
     
     csp = CSP("Kenken")
     
@@ -144,20 +143,26 @@ def kenken_csp_model(kenken_grid):
     
     return csp, vars
 
-def binary_not_equal(vars, i, j, k, constraint_type):
-    if(constraint_type == 'row'):
-        var1 = vars[i][j]
-        var2 = vars[i][k]
-        con = Constraint("C(V{}{},V{}{})".format(i+1, j+1, i+1, k+1), [var1, var2])
-    else:
-        var1 = vars[i][j]
-        var2 = vars[k][j]        
-        con = Constraint("C(V{}{},V{}{})".format(i+1, j+1, k+1, j+1), [var1, var2])
-        
-    sat_tuples = []
-    for t in itertools.product(var1.domain(), var2.domain()):
-        if t[0] != t[1]:
-            sat_tuples.append(t)
-    con.add_satisfying_tuples(sat_tuples)
-    
-    return con
+def binary_not_equal(vars, i, j, constraint_type):
+    binary_constraints = []
+    for k in range(len(vars[i])):
+        if(constraint_type == 'row'):
+            if( k <= j):
+                continue
+            var1 = vars[i][j]
+            var2 = vars[i][k]
+            con = Constraint("C(V{}{},V{}{})".format(i+1, j+1, i+1, k+1), [var1, var2])
+        else:
+            if( k <= i):
+                continue
+            var1 = vars[i][j]
+            var2 = vars[k][j]        
+            con = Constraint("C(V{}{},V{}{})".format(i+1, j+1, k+1, j+1), [var1, var2])
+            
+        sat_tuples = []
+        for t in itertools.product(var1.domain(), var2.domain()):
+            if t[0] != t[1]:
+                sat_tuples.append(t)
+        con.add_satisfying_tuples(sat_tuples)
+        binary_constraints.append(con)
+    return binary_constraints
