@@ -52,3 +52,32 @@ Solution
 [3, 4, 1, 2, 5, 6]
 [2, 3, 6, 1, 4, 5]
 [1, 2, 5, 6, 3, 4]
+Solving board
+=======================================================
+FC
+CSP Kenken solved. CPU Time used = 0.050784446000000004
+CSP Kenken  Assignments = 
+Var--V11  =  1     Var--V12  =  2     Var--V13  =  4     Var--V14  =  3     Var--V15  =  5     Var--V21  =  3     Var--V22  =  4     Var--V23  =  2     Var--V24  =  5     Var--V25  =  1     Var--V31  =  5     Var--V32  =  1     Var--V33  =  3     Var--V34  =  4     Var--V35  =  2     Var--V41  =  4     Var--V42  =  5     Var--V43  =  1     Var--V44  =  2     Var--V45  =  3     Var--V51  =  2     Var--V52  =  3     Var--V53  =  5     Var--V54  =  1     Var--V55  =  4     
+bt_search finished
+Search made 515 variable assignments and pruned 2067 variable values
+Solution
+[1, 2, 4, 3, 5]
+[3, 4, 2, 5, 1]
+[5, 1, 3, 4, 2]
+[4, 5, 1, 2, 3]
+[2, 3, 5, 1, 4]
+Solving board
+=======================================================
+FC
+CSP Kenken solved. CPU Time used = 0.08471395400000001
+CSP Kenken  Assignments = 
+Var--V11  =  1     Var--V12  =  2     Var--V13  =  4     Var--V14  =  3     Var--V15  =  6     Var--V16  =  5     Var--V21  =  6     Var--V22  =  3     Var--V23  =  1     Var--V24  =  2     Var--V25  =  5     Var--V26  =  4     Var--V31  =  5     Var--V32  =  6     Var--V33  =  3     Var--V34  =  1     Var--V35  =  4     Var--V36  =  2     Var--V41  =  3     Var--V42  =  5     Var--V43  =  2     Var--V44  =  4     Var--V45  =  1     Var--V46  =  6     Var--V51  =  2     Var--V52  =  4     Var--V53  =  5     Var--V54  =  6     Var--V55  =  3     Var--V56  =  1     Var--V61  =  4     Var--V62  =  1     Var--V63  =  6     Var--V64  =  5     Var--V65  =  2     Var--V66  =  3     
+bt_search finished
+Search made 730 variable assignments and pruned 3354 variable values
+Solution
+[1, 2, 4, 3, 6, 5]
+[6, 3, 1, 2, 5, 4]
+[5, 6, 3, 1, 4, 2]
+[3, 5, 2, 4, 1, 6]
+[2, 4, 5, 6, 3, 1]
+[4, 1, 6, 5, 2, 3]
