@@ -50,7 +50,36 @@ def kenken_csp_model(kenken_grid):
        all relevant variables (e.g., all pairs of variables in the
        same row, etc.) and an n-ary constraint for each cage in the grid.
     '''
-
-    ##IMPLEMENT
     
+    domain = []
+    for i in range(1, kenken_grid[0][0] + 1):
+        domain.append(i)
+    print(domain)
     
+    vars = []
+    for i in domain:
+        row = []
+        for j in domain:
+            row.append(Variable('V{}{}'.format(i, j), domain))
+        vars.append(row)
+        
+    cons = []
+    
+    # row constraint
+    for i in range(len(domain)):
+        row = vars[i]
+        for j in range(len(row)):
+            for k in range(len(row)):
+                con = Constraint("C(V{}{},V{}{})".format(i+1, j+1, i+1, k+1), [row[j], row[k]])
+                sat_tuples = []
+                for t in itertools.product(row[j].domain(), row[k].domain()):
+                    if t[0] != t[1]:
+                        sat_tuples.append(t)
+                con.add_satisfying_tuples(sat_tuples)
+                cons.append(con)
+    
+    csp = CSP("Kenken", vars)
+    for c in cons:
+        csp.add_constraint(c)
+    
+    return csp, vars
