@@ -54,14 +54,13 @@ def kenken_csp_model(kenken_grid):
     domain = []
     for i in range(1, kenken_grid[0][0] + 1):
         domain.append(i)
-    print(domain)
     
     vars = []
     for i in domain:
         row = []
         for j in domain:
             row.append(Variable('V{}{}'.format(i, j), domain))
-        vars.append(row)
+        vars.append(row)  
         
     cons = []
     
@@ -78,7 +77,27 @@ def kenken_csp_model(kenken_grid):
                 con.add_satisfying_tuples(sat_tuples)
                 cons.append(con)
     
-    csp = CSP("Kenken", vars)
+    # column constraint
+    for i in range(len(domain)):
+        for j in range(len(domain)):
+            for k in range(len(domain)):
+                con = Constraint("C(V{}{},V{}{})".format(i+1, j+1, k+1, j+1), [vars[i][j], vars[k][j]])
+                sat_tuples = []
+                for t in itertools.product(vars[i][j].domain(), vars[k][j].domain()):
+                    if t[0] != t[1]:
+                        sat_tuples.append(t)
+                con.add_satisfying_tuples(sat_tuples)
+                cons.append(con)    
+    
+    
+    csp = CSP("Kenken")
+    
+    # adding variables to csp
+    for row in vars:
+        for var in row:
+            csp.add_var(var)
+    
+    # adding constraints to csp
     for c in cons:
         csp.add_constraint(c)
     
