@@ -64,31 +64,12 @@ def kenken_csp_model(kenken_grid):
         
     cons = []
     
-    # row constraint
-    for i in range(len(domain)):
-        row = vars[i]
-        for j in range(len(row)):
-            for k in range(len(row)):
-                con = Constraint("C(V{}{},V{}{})".format(i+1, j+1, i+1, k+1), [row[j], row[k]])
-                sat_tuples = []
-                for t in itertools.product(row[j].domain(), row[k].domain()):
-                    if t[0] != t[1]:
-                        sat_tuples.append(t)
-                con.add_satisfying_tuples(sat_tuples)
-                cons.append(con)
-    
-    # column constraint
+    # row and column constraints
     for i in range(len(domain)):
         for j in range(len(domain)):
             for k in range(len(domain)):
-                con = Constraint("C(V{}{},V{}{})".format(i+1, j+1, k+1, j+1), [vars[i][j], vars[k][j]])
-                sat_tuples = []
-                for t in itertools.product(vars[i][j].domain(), vars[k][j].domain()):
-                    if t[0] != t[1]:
-                        sat_tuples.append(t)
-                con.add_satisfying_tuples(sat_tuples)
-                cons.append(con)    
-    
+                cons.append(binary_not_equal(vars, i, j, k, 'row'))
+                cons.append(binary_not_equal(vars, i, j, k, 'column'))
     
     csp = CSP("Kenken")
     
@@ -102,3 +83,21 @@ def kenken_csp_model(kenken_grid):
         csp.add_constraint(c)
     
     return csp, vars
+
+def binary_not_equal(vars, i, j, k, constraint_type):
+    if(constraint_type == 'row'):
+        var1 = vars[i][j]
+        var2 = vars[i][k]
+        con = Constraint("C(V{}{},V{}{})".format(i+1, j+1, i+1, k+1), [var1, var2])
+    else:
+        var1 = vars[i][j]
+        var2 = vars[k][j]        
+        con = Constraint("C(V{}{},V{}{})".format(i+1, j+1, k+1, j+1), [var1, var2])
+        
+    sat_tuples = []
+    for t in itertools.product(var1.domain(), var2.domain()):
+        if t[0] != t[1]:
+            sat_tuples.append(t)
+    con.add_satisfying_tuples(sat_tuples)
+    
+    return con   
