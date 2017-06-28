@@ -88,15 +88,39 @@ def kenken_csp_model(kenken_grid):
         
         sat_tuples = []
         
-        if(operator == 0):
-            for t in itertools.product(*cage_variables_domain):
+        for t in itertools.product(*cage_variables_domain):
+            # addition
+            if(operator == 0):
                 total = 0
                 for num in t:
                     total += num
                 if (total == target_num):
                     sat_tuples.append(t)
-            con.add_satisfying_tuples(sat_tuples)
-            cons.append(con)
+            # subtraction
+            elif(operator == 1):
+                for num in itertools.permutations(t):
+                    res = num[0]
+                    for n in range(1, len(num)):
+                        res -= num[n]
+                    if(res == target_num):
+                        sat_tuples.append(t)
+            # division
+            elif(operator == 2):
+                for num in itertools.permutations(t):
+                    res = num[0]
+                    for n in range(1, len(num)):
+                        res /= num[n]
+                    if(res == target_num):
+                        sat_tuples.append(t)
+            # multiplication
+            elif(operator == 3):
+                total = 1
+                for num in t:
+                    total *= num
+                if (total == target_num):
+                    sat_tuples.append(t)                
+        con.add_satisfying_tuples(sat_tuples)
+        cons.append(con)
     
     csp = CSP("Kenken")
     
