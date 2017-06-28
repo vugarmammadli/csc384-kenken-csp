@@ -76,16 +76,6 @@ def prop_BT(csp, newVar=None):
                 return False, []
     return True, []
 
-def FCCheck(c, var):
-    '''c is a constraint with all its variables already assigned,
-       except for variable var'''
-    for d in var.cur_domain():
-        if not c.has_support(var, d):
-            var.prune_value(d)
-    if var.cur_domain_size() == 0:
-        return False
-    return True
-
 def prop_FC(csp, newVar=None):
     '''Do forward checking. That is check constraints with 
        only one uninstantiated variable. Remember to keep 
@@ -143,7 +133,6 @@ def prop_GAC(csp, newVar=None):
                         return False, pruned_vals
                     else:
                         for cons in csp.get_cons_with_var(var):
-                            # ----- remember to check if cons == c ----- #
                             if (cons not in GAC_queue):
                                 GAC_queue.append(cons)
     return True, pruned_vals

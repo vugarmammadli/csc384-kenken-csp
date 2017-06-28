@@ -51,22 +51,24 @@ def kenken_csp_model(kenken_grid):
        same row, etc.) and an n-ary constraint for each cage in the grid.
     '''
     
+    # generates domain
     domain = []
     for i in range(1, kenken_grid[0][0] + 1):
         domain.append(i)
     
+    # generates variables according to domain
     vars = []
     for i in domain:
         row = []
         for j in domain:
             row.append(Variable('V{}{}'.format(i, j), domain))
         vars.append(row)  
-        
+    
+    # the list of all constraints
     cons = []
     
     # operation constraints for each cage
     for cage in range(1, len(kenken_grid)):
-        
         if(len(kenken_grid[cage]) > 2):
             operator = kenken_grid[cage][-1]  
             target_num = kenken_grid[cage][-2]
@@ -116,13 +118,13 @@ def kenken_csp_model(kenken_grid):
                         sat_tuples.append(t)
             con.add_satisfying_tuples(sat_tuples)
             cons.append(con)
+        # If a list has two elements, the first element represents a cell,
+        # and the second element is the value imposed to that cell.
         else:
             i = int(str(kenken_grid[cage][0])[0]) - 1
             j = int(str(kenken_grid[cage][0])[1]) - 1
             dom = kenken_grid[cage][1]
             vars[i][j] = Variable('V{}{}'.format(i, j), [dom])
-    
-        
             
     # row and column constraints
     for i in range(len(domain)):
@@ -144,6 +146,8 @@ def kenken_csp_model(kenken_grid):
     return csp, vars
 
 def binary_not_equal(vars, i, j, constraint_type):
+    '''Returns list of constraints that are generated according to constraint_type, which is
+       either row or column. i and j are the indexes for NxN variables.'''
     binary_constraints = []
     for k in range(len(vars[i])):
         if(constraint_type == 'row'):
