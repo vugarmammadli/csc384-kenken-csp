@@ -64,63 +64,72 @@ def kenken_csp_model(kenken_grid):
         
     cons = []
     
+    # operation constraints for each cage
+    for cage in range(1, len(kenken_grid)):
+        
+        if(len(kenken_grid[cage]) > 2):
+            operator = kenken_grid[cage][-1]  
+            target_num = kenken_grid[cage][-2]
+            cage_variables = []
+            cage_variables_domain = []
+            for cell in range(len(kenken_grid[cage]) - 2):
+                i = int(str(kenken_grid[cage][cell])[0]) - 1
+                j = int(str(kenken_grid[cage][cell])[1]) - 1
+                
+                cage_variables.append(vars[i][j])
+                cage_variables_domain.append(vars[i][j].domain())
+            
+            con = Constraint("C(Cage{})".format(cage), cage_variables)
+            
+            sat_tuples = []
+            
+            for t in itertools.product(*cage_variables_domain):
+                # addition
+                if(operator == 0):
+                    total = 0
+                    for num in t:
+                        total += num
+                    if (total == target_num):
+                        sat_tuples.append(t)
+                # subtraction
+                elif(operator == 1):
+                    for num in itertools.permutations(t):
+                        res = num[0]
+                        for n in range(1, len(num)):
+                            res -= num[n]
+                        if(res == target_num):
+                            sat_tuples.append(t)
+                # division
+                elif(operator == 2):
+                    for num in itertools.permutations(t):
+                        res = num[0]
+                        for n in range(1, len(num)):
+                            res /= num[n]
+                        if(res == target_num):
+                            sat_tuples.append(t)
+                # multiplication
+                elif(operator == 3):
+                    total = 1
+                    for num in t:
+                        total *= num
+                    if (total == target_num):
+                        sat_tuples.append(t)
+            con.add_satisfying_tuples(sat_tuples)
+            cons.append(con)
+        else:
+            i = int(str(kenken_grid[cage][0])[0]) - 1
+            j = int(str(kenken_grid[cage][0])[1]) - 1
+            dom = kenken_grid[cage][1]
+            vars[i][j] = Variable('V{}{}'.format(i, j), [dom])
+    
+        
+            
     # row and column constraints
     for i in range(len(domain)):
         for j in range(len(domain)):
             for k in range(len(domain)):
                 cons.append(binary_not_equal(vars, i, j, k, 'row'))
-                cons.append(binary_not_equal(vars, i, j, k, 'column'))
-    
-    # operation constraints for each cage
-    for cage in range(1, len(kenken_grid)):
-        operator = kenken_grid[cage][-1]  
-        target_num = kenken_grid[cage][-2]
-        cage_variables = []
-        cage_variables_domain = []
-        for cell in range(len(kenken_grid[cage]) - 2):
-            i = int(str(kenken_grid[cage][cell])[0]) - 1
-            j = int(str(kenken_grid[cage][cell])[1]) - 1
-            
-            cage_variables.append(vars[i][j])
-            cage_variables_domain.append(vars[i][j].domain())
-        
-        con = Constraint("C(Cage{})".format(cage), cage_variables)
-        
-        sat_tuples = []
-        
-        for t in itertools.product(*cage_variables_domain):
-            # addition
-            if(operator == 0):
-                total = 0
-                for num in t:
-                    total += num
-                if (total == target_num):
-                    sat_tuples.append(t)
-            # subtraction
-            elif(operator == 1):
-                for num in itertools.permutations(t):
-                    res = num[0]
-                    for n in range(1, len(num)):
-                        res -= num[n]
-                    if(res == target_num):
-                        sat_tuples.append(t)
-            # division
-            elif(operator == 2):
-                for num in itertools.permutations(t):
-                    res = num[0]
-                    for n in range(1, len(num)):
-                        res /= num[n]
-                    if(res == target_num):
-                        sat_tuples.append(t)
-            # multiplication
-            elif(operator == 3):
-                total = 1
-                for num in t:
-                    total *= num
-                if (total == target_num):
-                    sat_tuples.append(t)                
-        con.add_satisfying_tuples(sat_tuples)
-        cons.append(con)
+                cons.append(binary_not_equal(vars, i, j, k, 'column'))    
     
     csp = CSP("Kenken")
     
